@@ -118,21 +118,22 @@ def converter(example):
 
 #-------- RUN TIME FUNCTION ----------
 def run_score_update():
-    for item in msg_group(send_score_update()):
-        url = "http://localhost:8080/scoreupdate"
+    while True:
+        for item in msg_group(send_score_update()):
+            url = "http://localhost:8080/scoreupdate"
 
-        #print(msg[list(item.keys())[0]])
-        querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
+            #print(msg[list(item.keys())[0]])
+            querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
 
-        payload = ""
-        headers = {
-            "title": "Score update ready!",
-            "msg": msg[list(item.keys())[0]],
-            "img": "https://cdn-icons-png.flaticon.com/512/5334/5334827.png "
-        }
+            payload = ""
+            headers = {
+                "title": "Score update ready!",
+                "msg": msg[list(item.keys())[0]],
+                "img": "https://cdn-icons-png.flaticon.com/512/5334/5334827.png "
+            }
 
-        response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    #time.sleep(duration)
+            response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+        time.sleep(15)
 
 #recipients=converter(item[list(item.keys())[0]])
 # example=['0x9017804aE02877C32739A7703400326e9Ac9a04d', 'notify_24'], ['0xe9c079525aCe13822A7845774F163f27eb5f21Da', 'notify_24'], ['0x9022a898B401d368cBa4023ef375beEF165a8128', 'notify_24'], ['0x61ec3Cd93E62a858408c92bdec903304c4C5436e', 'notify_24'], ['0xFa37d93a18Ed35139785629840B62f7C3aE7d088', 'notify_24']

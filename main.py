@@ -1,22 +1,13 @@
 from update_helpers import *
-import threading
+from threading import Thread
 
 '''
 Using threads for async function execution
 '''
-# e = threading.Event()
-# t1 = threading.Thread(target=run_score_update(15)) #runs every 15 seconds
-# t1.start()
-# print("Score update thread started")
+if __name__ == '__main__':
+    Thread(target = run_score_update).start()
+    Thread(target = run_leaderboard, args=("0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8",)).start()
 
-# t2 = threading.Thread(target=run_leaderboard(15, "0x9017804aE02877C32739A7703400326e9Ac9a04d"))
-# t2.start()
-# print("Leaderboard thread started")
 
-def run(func1, func2):
-    while True:
-        func1
-        func2
-        time.sleep(15)
+#0x9017804aE02877C32739A7703400326e9Ac9a04d
 
-run(run_score_update(),run_leaderboard("0x9017804aE02877C32739A7703400326e9Ac9a04d"))
