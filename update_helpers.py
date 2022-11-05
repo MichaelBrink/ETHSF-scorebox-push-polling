@@ -4,6 +4,7 @@ import os
 import requests
 import time
 import requests
+import numpy as np
 import psycopg2
 from dotenv import load_dotenv
 load_dotenv()
@@ -114,6 +115,8 @@ def converter(example):
             pass
     return(output)
 
+
+#-------- RUN TIME FUNCTION ----------
 def run_score_update(duration):
     for item in msg_group(send_score_update()):
         url = "http://localhost:8080/api"
@@ -133,3 +136,42 @@ def run_score_update(duration):
 
 #recipients=converter(item[list(item.keys())[0]])
 # example=['0x9017804aE02877C32739A7703400326e9Ac9a04d', 'notify_24'], ['0xe9c079525aCe13822A7845774F163f27eb5f21Da', 'notify_24'], ['0x9022a898B401d368cBa4023ef375beEF165a8128', 'notify_24'], ['0x61ec3Cd93E62a858408c92bdec903304c4C5436e', 'notify_24'], ['0xFa37d93a18Ed35139785629840B62f7C3aE7d088', 'notify_24']
+#-------------------------------------
+#----- LEADERBOARD NOTIFICATION-------
+#-------------------------------------
+
+def get_leaderboard():
+    conn_string = str('host='+os.environ['host']+' dbname='+os.environ['dbname']+' user='+os.environ['user']+' password='+os.environ['password'])
+
+    with psycopg2.connect(conn_string) as conn, conn.cursor() as cursor:
+        dump = [
+            get_rows_as_dicts(cursor, os.environ['db_table'])
+
+        ]
+        store_data = dump
+        #store_data = json.dumps(dump, default=dump_date, indent=2)
+
+    a = sorted(store_data[0], key=lambda i: i['score_int'], reverse=True) #rank descending by score_int
+    b = [item["wallet"] for item in a] #extract wallet addresses only for leaderboard
+    c = [[item["wallet"], item["score_int"]] for item in a] #extract wallet addresses only for leaderboard
+
+    #filtered_list = list( dict.fromkeys(b) ) #convert list to dict (remove dups and back to list)
+    filtered_list = list(dict.fromkeys(b))[0:3]
+    
+    arr = np.array(c)
+    u, d = np.unique(np.array(c)[:,0], return_counts=True)
+    dup = u[d > 1]
+    #result = d[(d[:,1]==dup[:,None]).any(0)]
+    result = arr[(arr[:,0]==dup[:,None]).any(0)]
+
+    return(c, u)
+
+def ranked_list():
+    counter =1 
+    output=[]
+    for x in get_leaderboard()[1]:
+        output.append([x, counter])
+        counter = counter + 1
+    return(output)
+
+print(ranked_list())
