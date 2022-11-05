@@ -100,9 +100,9 @@ def msg_group(mailing_list):
 
 #print(msg_group(send_score_update()))
 
-msg={"notify_24": str(datetime.today()),
-    "notify_48": str(datetime.today()),
-    "notify_72": str(datetime.today())}
+msg={"notify_24": "Score ready for update in 1 day | "+str(datetime.today()),
+    "notify_48": "Score ready for update in 2 days | "+str(datetime.today()),
+    "notify_72": "Score ready for update in 3 day | "+str(datetime.today())}
 
 def converter(example):
     output = []
@@ -114,22 +114,22 @@ def converter(example):
             pass
     return(output)
 
+def run_score_update(duration):
+    for item in msg_group(send_score_update()):
+        url = "http://localhost:8080/api"
 
-for item in msg_group(send_score_update()):
-    url = "http://localhost:8080/api"
+        #print(msg[list(item.keys())[0]])
+        querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
 
-    #print(msg[list(item.keys())[0]])
-    querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
+        payload = ""
+        headers = {
+            "title": "Score update ready!",
+            "msg": msg[list(item.keys())[0]],
+            "img": "https://cdn-icons-png.flaticon.com/512/5334/5334827.png "
+        }
 
-    payload = ""
-    headers = {
-        "title": "Score update ready!",
-        "msg": msg[list(item.keys())[0]],
-        "img": "https://cdn-icons-png.flaticon.com/512/5334/5334827.png "
-    }
-
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-
+        response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    time.sleep(duration)
 
 #recipients=converter(item[list(item.keys())[0]])
 # example=['0x9017804aE02877C32739A7703400326e9Ac9a04d', 'notify_24'], ['0xe9c079525aCe13822A7845774F163f27eb5f21Da', 'notify_24'], ['0x9022a898B401d368cBa4023ef375beEF165a8128', 'notify_24'], ['0x61ec3Cd93E62a858408c92bdec903304c4C5436e', 'notify_24'], ['0xFa37d93a18Ed35139785629840B62f7C3aE7d088', 'notify_24']
