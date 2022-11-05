@@ -117,9 +117,9 @@ def converter(example):
 
 
 #-------- RUN TIME FUNCTION ----------
-def run_score_update(duration):
+def run_score_update():
     for item in msg_group(send_score_update()):
-        url = "http://localhost:8080/updatescore"
+        url = "http://localhost:8080/scoreupdate"
 
         #print(msg[list(item.keys())[0]])
         querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
@@ -132,7 +132,7 @@ def run_score_update(duration):
         }
 
         response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    time.sleep(duration)
+    #time.sleep(duration)
 
 #recipients=converter(item[list(item.keys())[0]])
 # example=['0x9017804aE02877C32739A7703400326e9Ac9a04d', 'notify_24'], ['0xe9c079525aCe13822A7845774F163f27eb5f21Da', 'notify_24'], ['0x9022a898B401d368cBa4023ef375beEF165a8128', 'notify_24'], ['0x61ec3Cd93E62a858408c92bdec903304c4C5436e', 'notify_24'], ['0xFa37d93a18Ed35139785629840B62f7C3aE7d088', 'notify_24']
@@ -156,7 +156,7 @@ def get_leaderboard():
     c = [[item["wallet"], item["score_int"]] for item in a] #extract wallet addresses only for leaderboard
 
     #filtered_list = list( dict.fromkeys(b) ) #convert list to dict (remove dups and back to list)
-    filtered_list = list(dict.fromkeys(b))[0:3]
+    filtered_list = list(dict.fromkeys(b))
     
     arr = np.array(c)
     u, d = np.unique(np.array(c)[:,0], return_counts=True)
@@ -164,14 +164,38 @@ def get_leaderboard():
     #result = d[(d[:,1]==dup[:,None]).any(0)]
     result = arr[(arr[:,0]==dup[:,None]).any(0)]
 
-    return(c, u)
+    return(c, u, filtered_list)
+
 
 def ranked_list():
     counter =1 
     output=[]
-    for x in get_leaderboard()[1]:
+    for x in get_leaderboard()[2]:
         output.append([x, counter])
         counter = counter + 1
     return(output)
 
-print(ranked_list())
+def get_position(target):
+    a=np.array(ranked_list())
+    try:
+        rank = np.where(a == target)[0].tolist()[0]+1  
+    except:
+        pass
+    return (rank)
+
+
+def run_leaderboard(target):
+    for item in ranked_list():
+        url = "http://localhost:8080/leaderboard"
+        payload = ""
+        headers = {
+            "recipient": target,
+            "title": "ScoreBox Leaderboard Position",
+            "msg": "You rank #" + str(get_position(target))+" | "+str(datetime.today()),
+            "img": "https://cdn-icons-png.flaticon.com/512/7941/7941394.png"
+        }
+
+        response = requests.request("POST", url, data=payload, headers=headers)
+    #time.sleep(duration)
+
+#run_leaderboard(15, "0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8")
