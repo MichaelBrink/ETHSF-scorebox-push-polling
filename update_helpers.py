@@ -119,7 +119,7 @@ def converter(example):
 #-------- RUN TIME FUNCTION ----------
 def run_score_update(duration):
     for item in msg_group(send_score_update()):
-        url = "http://localhost:8080/api"
+        url = "http://localhost:8080/updatescore"
 
         #print(msg[list(item.keys())[0]])
         querystring = {"recipients":str(converter(item[list(item.keys())[0]]))}
