@@ -46,6 +46,22 @@ def create_time_list():
     delta_list=[days_between(items['timestamp']) for items in newlist]
     return(delta_list, newlist)
 
+def msg_group(mailing_list):
+    
+    ls_24=[]
+    ls_48=[]
+    ls_72=[]
+
+    for item in mailing_list:
+        if item[1] == "notify_24":
+            ls_24.append(item)
+        elif item[1] == "notify_48":
+            ls_48.append(item)
+        else:
+            ls_72.append(item)
+
+    return([{"24":ls_24}, {"48":ls_48}, {"72":ls_72}])
+    
 def send_score_update():
     '''
     Check which users are eligible for a score update
@@ -72,25 +88,29 @@ def send_score_update():
             mailing_list.append([newlist[counter]['wallet'], "notify_72"])
             #print ("NONE FOR: "+ newlist[counter]['wallet'] + str(n))
 
-        counter +=1
+    return (mailing_list)
 
-    msg={"notify_24": str(datetime.today()),
-        "notify_48": str(datetime.today()),
-        "notify_72": str(datetime.today())}
+msg={"notify_24": str(datetime.today()),
+    "notify_48": str(datetime.today()),
+    "notify_72": str(datetime.today())}
+    
 
+for item in msg_group(send_score_update()): 
+    try:
+        print (item)
+    except:
+        pass
  
-    url = os.environ['push_url']
+    # url = os.environ['push_url']
 
-    querystring = {"recipients":"['eip155:5:0xe9c079525aCe13822A7845774F163f27eb5f21Da','eip155:5:0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8']"}
+    # querystring = {"recipients":"['eip155:5:0xe9c079525aCe13822A7845774F163f27eb5f21Da','eip155:5:0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8']"}
 
-    payload = ""
-    headers = {
-        "title": "tile",
-        "msg": "Something",
-        "img": "https://cdn-icons-png.flaticon.com/512/4525/4525688.png"
-    }
-    #response = requests.request("POST", url, data=payload, headers=headers)
+    # payload = ""
+    # headers = {
+    #     "title": "tile",
+    #     "msg": "Something",
+    #     "img": "https://cdn-icons-png.flaticon.com/512/4525/4525688.png"
+    # }
+    # #response = requests.request("POST", url, data=payload, headers=headers)
+\
 
-    print(mailing_list)
-
-send_score_update()
