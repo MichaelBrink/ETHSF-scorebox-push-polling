@@ -8,6 +8,7 @@ import numpy as np
 import psycopg2
 from dotenv import load_dotenv
 load_dotenv()
+import threading
 
 # --- SCORE UPDATE HELPER FUNCTIONS
 
@@ -133,7 +134,8 @@ def run_score_update():
             }
 
             response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-        time.sleep(15)
+        
+        time.sleep(10)
 
 #recipients=converter(item[list(item.keys())[0]])
 # example=['0x9017804aE02877C32739A7703400326e9Ac9a04d', 'notify_24'], ['0xe9c079525aCe13822A7845774F163f27eb5f21Da', 'notify_24'], ['0x9022a898B401d368cBa4023ef375beEF165a8128', 'notify_24'], ['0x61ec3Cd93E62a858408c92bdec903304c4C5436e', 'notify_24'], ['0xFa37d93a18Ed35139785629840B62f7C3aE7d088', 'notify_24']
@@ -197,6 +199,3 @@ def run_leaderboard(target):
         }
 
         response = requests.request("POST", url, data=payload, headers=headers)
-    #time.sleep(duration)
-
-#run_leaderboard(15, "0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8")
