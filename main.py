@@ -1,16 +1,15 @@
-from update_helpers import *
-import threading
-from threading import Thread
+from helpers import *
 import time
-import schedule
+from multiprocessing import Process
+import sys
 
 
 '''
 Using threads for async function execution
 '''
 
-schedule.every(1).minutes.do(run_score_update)
-
-while 1:
-    schedule.run_pending()
-    time.sleep(1)
+if __name__=='__main__':
+    p1 = Process(target = run_score_update)
+    p1.start()
+    p2 = Process(target = run_leaderboard, args=('0x691C7c07A1B1698c56340d386d8cC7A823f6e2D8',))
+    p2.start()
